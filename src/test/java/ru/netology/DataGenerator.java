@@ -11,6 +11,9 @@ import java.util.Locale;
 import static io.restassured.RestAssured.given;
 
 public class DataGenerator {
+    DataGenerator() {
+    }
+
     private static RequestSpecification requestSpec = new RequestSpecBuilder()
             .setBaseUri("http://localhost")
             .setPort(9999)
@@ -19,11 +22,7 @@ public class DataGenerator {
             .log(LogDetail.ALL)
             .build();
 
-    public static Registration getUser(String status) {
-        Faker faker = new Faker(new Locale("en"));
-
-        Registration registration = new Registration(faker.name().firstName(),
-                faker.internet().password(), status);
+    public static void makeRequest(Registration registration) {
         given()
                 .spec(requestSpec)
                 .body(registration)
@@ -31,6 +30,45 @@ public class DataGenerator {
                 .post("/api/system/users")
                 .then()
                 .statusCode(200);
+    }
+
+    public static Registration validActiveUser() {
+        Faker faker = new Faker(new Locale("en"));
+        String login = faker.name().firstName();
+        String password = faker.internet().password();
+        String status = "active";
+        Registration registration = new Registration(login, password, status);
+        makeRequest(registration);
         return registration;
+    }
+
+    public static Registration validBlockedUser() {
+        Faker faker = new Faker(new Locale("en"));
+        String login = faker.name().firstName();
+        String password = faker.internet().password();
+        String status = "blocked";
+        Registration registration = new Registration(login, password, status);
+        makeRequest(registration);
+        return registration;
+    }
+
+    public static Registration userWithIncorrectPassword() {
+        Faker faker = new Faker(new Locale("en"));
+        String login = faker.name().firstName();
+        String password = "password";
+        String status = "active";
+        Registration registration = new Registration(login, password, status);
+        makeRequest(registration);
+        return new Registration(login, "incorrectpassword", status);
+    }
+
+    public static Registration userWithIncorrectLogin() {
+        Faker faker = new Faker(new Locale("en"));
+        String login = "vasya";
+        String password = faker.internet().password();
+        String status = "active";
+        Registration registration = new Registration(login, password, status);
+        makeRequest(registration);
+        return new Registration("petya", password, status);
     }
 }
