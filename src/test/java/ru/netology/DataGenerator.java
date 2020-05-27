@@ -55,16 +55,16 @@ public class DataGenerator {
     public static Registration userWithIncorrectPassword() {
         Faker faker = new Faker(new Locale("en"));
         String login = faker.name().firstName();
-        String password = "password";
+        String password = faker.internet().password();
         String status = "active";
         Registration registration = new Registration(login, password, status);
         makeRequest(registration);
-        return new Registration(login, "incorrectpassword", status);
+        return new Registration(login, "incorrect", status);
     }
 
     public static Registration userWithIncorrectLogin() {
         Faker faker = new Faker(new Locale("en"));
-        String login = "vasya";
+        String login = faker.name().firstName();
         String password = faker.internet().password();
         String status = "active";
         Registration registration = new Registration(login, password, status);
